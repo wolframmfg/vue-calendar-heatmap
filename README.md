@@ -141,12 +141,29 @@ Tooltip text to display on days without data. `null` by default (shows no toolti
 ```
 
 ### **tooltip** - `tooltip`
-Boolean for enable/disable tooltip on square hover. `true` by default.
+Boolean or function to enable/disable tooltip on square hover. `true` by default.
 ``` html
+ <!-- Disable tooltips -->
  <calendar-heatmap :tooltip="false" ... />
 ```
+``` html
+<!-- Custom tooltips -->
+<script>
+function itemPlural(count) {
+    if (count === 1) {
+        return "1 item";
+    } else {
+        return `${count} items`;
+    }
+}
+</script>
+
+<calendar-heatmap :tooltip="itemPlural" ... />
+```
+
 ### **tooltipUnit** - `tooltip-unit`
 String representing heatmap's unit of measure. Value is `"contributions"` by default.
+Ignored if `tooltip` is set to `false` or a custom function.
 ``` html
  <calendar-heatmap tooltip-unit="stars" ... />
 ```
@@ -155,6 +172,12 @@ String representing heatmap's unit of measure. Value is `"contributions"` by def
 Boolean to switch to vertical mode. `false` by default.
 ``` html
  <calendar-heatmap :vertical="true" ... />
+```
+
+### **legendValues** - `legend-values`
+Boolean to show min/max values in legend instead of "Less"/"More". `false` by default.
+``` html
+ <calendar-heatmap legend-values ... />
 ```
 
 ## License

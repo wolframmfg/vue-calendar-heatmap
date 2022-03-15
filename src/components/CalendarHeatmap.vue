@@ -23,9 +23,9 @@
 
       g.vch__legend__wrapper(:transform="legendWrapperTransform[position]")
         text(
-          :x="vertical ? SQUARE_SIZE * 1.25 : -25"
+          :x="vertical ? SQUARE_SIZE * 1.25 : (legendValues ? -10 : -25)"
           :y="vertical ? 8 : SQUARE_SIZE + 1"
-        ) {{ lo.less }}
+        ) {{ legendValues ? '0' : lo.less }}
         rect(
           v-for="(color, index) in rangeColor",
           :key="index",
@@ -38,7 +38,7 @@
         text(
           :x="vertical ? SQUARE_SIZE * 1.25 : SQUARE_SIZE * rangeColor.length + 1",
           :y="vertical ? SQUARE_SIZE * (rangeColor.length + 2) - SQUARE_BORDER_SIZE : SQUARE_SIZE + 1"
-          ) {{ lo.more }}
+          ) {{ legendValues ? heatmap.max : lo.more }}
       g.vch__year__wrapper(:transform="yearWrapperTransform")
         g.vch__month__wrapper(
           v-for="(week, weekIndex) in heatmap.calendar",
@@ -89,7 +89,7 @@ export default {
       type: Object
     },
     tooltip: {
-      type: Boolean,
+      type: Boolean|Function,
       default: true
     },
     tooltipUnit: {
@@ -103,7 +103,11 @@ export default {
     noDataText: {
       type: String,
       default: null
-    }
+    },
+    legendValues: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data () {
@@ -183,7 +187,12 @@ export default {
   methods: {
     tooltipOptions (day) {
       if (this.tooltip) {
-        if (day.count != null) {
+        if (typeof this.tooltip === "function") {
+          return {
+            content: this.tooltip(day.count, day.date),
+            delay: {show: 150, hide: 50},
+          }
+        } else if (day.count != null) {
           return {
             content: `<b>${day.count} ${this.tooltipUnit}</b> ${this.lo.on} ${this.lo.months[day.date.getMonth()]} ${day.date.getDate()}, ${day.date.getFullYear()}`,
             delay: { show: 150, hide: 50 }
